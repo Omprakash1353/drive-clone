@@ -1,7 +1,9 @@
-import { FileIcon, Folder as FolderIcon } from "lucide-react";
-import type { File, Folder } from "~/lib/mock-data";
+import { FileIcon, Folder as FolderIcon, Trash2Icon } from "lucide-react";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
+import type { DB_FileType, DB_FolderType } from "~/server/db/schema";
 
-export function FileRow(props: { file: File }) {
+export function FileRow(props: { file: DB_FileType }) {
   const { file } = props;
   return (
     <li
@@ -12,25 +14,27 @@ export function FileRow(props: { file: File }) {
         <div className="col-span-6 flex items-center">
           <a
             href={file.url}
-            target="_blank"
             className="flex items-center text-gray-100 hover:text-blue-400"
+            target="_blank"
           >
             <FileIcon className="mr-3" size={20} />
             {file.name}
           </a>
         </div>
-        <div className="col-span-3 text-gray-400">file</div>
+        <div className="col-span-2 text-gray-400">file</div>
         <div className="col-span-3 text-gray-400">{file.size}</div>
+        <div className="col-span-1 text-gray-400">
+          <Button variant="ghost" aria-label="Delete file">
+            <Trash2Icon size={20} />
+          </Button>
+        </div>
       </div>
     </li>
   );
 }
 
-export function FolderRow(props: {
-  folder: Folder;
-  handleFolderClick: () => void;
-}) {
-  const { folder, handleFolderClick } = props;
+export function FolderRow(props: { folder: DB_FolderType }) {
+  const { folder } = props;
   return (
     <li
       key={folder.id}
@@ -38,16 +42,16 @@ export function FolderRow(props: {
     >
       <div className="grid grid-cols-12 items-center gap-4">
         <div className="col-span-6 flex items-center">
-          <button
-            onClick={() => handleFolderClick()}
+          <Link
+            href={`/f/${folder.id}`}
             className="flex items-center text-gray-100 hover:text-blue-400"
           >
             <FolderIcon className="mr-3" size={20} />
             {folder.name}
-          </button>
+          </Link>
         </div>
-        <div className="col-span-3 text-gray-400">Folder</div>
-        <div className="col-span-3 text-gray-400">--</div>
+        <div className="col-span-3 text-gray-400">folder</div>
+        <div className="col-span-3 text-gray-400">---</div>
       </div>
     </li>
   );
