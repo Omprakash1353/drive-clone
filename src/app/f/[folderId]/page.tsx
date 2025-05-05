@@ -1,11 +1,9 @@
-import { QUERIES } from "~/server/db/queries";
 import DriveContents from "./drive-contents";
+import { QUERIES } from "~/server/db/queries";
 
-interface GoogleDriveCloneProps {
+export default async function GoogleDriveClone(props: {
   params: Promise<{ folderId: string }>;
-}
-
-export default async function GoogleDriveClone(props: GoogleDriveCloneProps) {
+}) {
   const params = await props.params;
 
   const parsedFolderId = parseInt(params.folderId);

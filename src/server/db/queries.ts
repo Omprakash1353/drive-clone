@@ -4,7 +4,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { db } from "~/server/db";
 import {
   files_table as filesSchema,
-  folders_table as foldersSchema
+  folders_table as foldersSchema,
 } from "~/server/db/schema";
 
 export const QUERIES = {

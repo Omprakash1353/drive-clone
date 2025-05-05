@@ -1,17 +1,25 @@
+"use client";
+
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import type { DB_FileType, DB_FolderType } from "~/server/db/schema";
+import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
+import { UploadButton } from "~/components/uploadthing";
+import type { files_table, folders_table } from "~/server/db/schema";
 import { FileRow, FolderRow } from "./file-row";
 
-interface DriveContentsProps {
-  files: DB_FileType[];
-  folders: DB_FolderType[];
-  parents: DB_FolderType[];
-  currentFolderId: number;
-}
+export default function DriveContents(props: {
+  files: (typeof files_table.$inferSelect)[];
+  folders: (typeof folders_table.$inferSelect)[];
+  parents: (typeof folders_table.$inferSelect)[];
 
-export default function DriveContents(props: DriveContentsProps) {
+  currentFolderId: number;
+}) {
+  const navigate = useRouter();
+
+  const posthog = usePostHog();
+
   return (
     <div className="min-h-screen bg-gray-900 p-8 text-gray-100">
       <div className="mx-auto max-w-6xl">
@@ -20,7 +28,7 @@ export default function DriveContents(props: DriveContentsProps) {
             <Link href="/f/1" className="mr-2 text-gray-300 hover:text-white">
               My Drive
             </Link>
-            {props.parents.map((folder) => (
+            {props.parents.map((folder, index) => (
               <div key={folder.id} className="flex items-center">
                 <ChevronRight className="mx-2 text-gray-500" size={16} />
                 <Link
@@ -59,6 +67,23 @@ export default function DriveContents(props: DriveContentsProps) {
             ))}
           </ul>
         </div>
+        <UploadButton
+          endpoint="driveUploader"
+          onBeforeUploadBegin={(files) => {
+            posthog.capture("files_uploading", {
+              fileCount: files.length,
+              folderId: props.currentFolderId,
+            });
+
+            return files.map((file) => ({
+              ...file,
+              folderId: props.currentFolderId,
+            }));
+          }}
+          onClientUploadComplete={() => {
+            navigate.refresh();
+          }}
+        />
       </div>
     </div>
   );
