@@ -69,6 +69,7 @@ export default function DriveContents(props: {
         </div>
         <UploadButton
           endpoint="driveUploader"
+          input={{ folderId: props.currentFolderId }}
           onBeforeUploadBegin={(files) => {
             posthog.capture("files_uploading", {
               fileCount: files.length,
